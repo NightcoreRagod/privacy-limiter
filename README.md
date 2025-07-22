@@ -545,5 +545,145 @@ Would you like me to:
 
 Let me know how you want to expand this!
 
+**********************************************************************************Reference idea from chatgpt******************************************************************************************************
+stage-5
+
+
+
+Awesome, Roshini! Let's enhance your **LLM Privacy Gate Streamlit app** with the optional features you mentioned. Here's the full **upgrade plan** with implementation details.
+
+---
+
+## ✅ Enhancements to Add
+
+### 1. 🎨 **Color-coded Highlighting with HTML Spans**
+
+Display detected PII in color using `st.markdown(…, unsafe_allow_html=True)`:
+
+```python
+def highlight_pii(doc):
+    output = ""
+    last_idx = 0
+    for ent in doc.ents:
+        output += doc.text[last_idx:ent.start_char]
+        if ent.label_ in PII_ENTITIES:
+            output += f"<span style='background-color:#ffcccc;'>{ent.text}</span>"
+        else:
+            output += ent.text
+        last_idx = ent.end_char
+    output += doc.text[last_idx:]
+    return output
+```
+
+Then show it in the app:
+
+```python
+st.markdown(highlight_pii(doc), unsafe_allow_html=True)
+```
+
+---
+
+### 2. 🧠 **Sentiment Detection (TextBlob or spaCy alternatives)**
+
+Add `textblob` to `requirements.txt`:
+
+```bash
+pip install textblob
+python -m textblob.download_corpora
+```
+
+Code:
+
+```python
+from textblob import TextBlob
+
+def get_sentiment(text):
+    blob = TextBlob(text)
+    polarity = blob.sentiment.polarity
+    if polarity > 0.5:
+        return "😊 Positive"
+    elif polarity < -0.5:
+        return "😠 Negative"
+    else:
+        return "😐 Neutral"
+```
+
+Show in app:
+
+```python
+sentiment = get_sentiment(user_input)
+st.subheader("🧠 Sentiment Analysis")
+st.info(f"Sentiment: {sentiment}")
+```
+
+---
+
+### 3. 🚦 **Toggle: Replace, Warn, or Block**
+
+Add a selection box:
+
+```python
+mode = st.radio("Choose action on sensitive data:", ["Replace", "Warn", "Block"])
+```
+
+Use the mode in logic:
+
+```python
+if redacted_items:
+    if mode == "Block":
+        st.error("Input blocked due to sensitive data.")
+        st.stop()
+    elif mode == "Warn":
+        st.warning("Sensitive info found. Proceed with caution.")
+```
+
+---
+
+### 4. 📤 **Export Redaction Log to CSV/PDF**
+
+#### CSV Export:
+
+```python
+import pandas as pd
+import io
+
+def export_log_csv(redacted_items):
+    df = pd.DataFrame(redacted_items, columns=["Entity", "Label"])
+    return df.to_csv(index=False).encode('utf-8')
+```
+
+In app:
+
+```python
+csv = export_log_csv(redacted_items)
+st.download_button("⬇️ Download Redaction Log (CSV)", csv, "redaction_log.csv", "text/csv")
+```
+
+#### PDF Export (optional, advanced):
+
+Use `reportlab` or `fpdf` for generating a redaction report.
+
+---
+
+## 🧩 Integration Plan
+
+| Feature         | Code Area          | UI Element             |
+| --------------- | ------------------ | ---------------------- |
+| Highlight spans | `highlight_pii()`  | `st.markdown(...)`     |
+| Sentiment       | `get_sentiment()`  | `st.info(...)`         |
+| Action toggle   | `st.radio(...)`    | Logic branch           |
+| CSV export      | `export_log_csv()` | `st.download_button()` |
+
+---
+
+Would you like me to:
+
+* **Bundle all this into one updated `app.py` file**?
+* Or walk through **each enhancement line by line**?
+
+Let me know how you'd like to proceed—I can generate the complete enhanced version for you.
+
+
+
 
 
