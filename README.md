@@ -1,7 +1,7 @@
 # privacy-limiter
 Prevent LLMs from processing sensitive information blindly.
 
-That’s a idea, essentially describing a **privacy-focused annotation layer** on top of LLM inputs, using **color-coded text** to:
+This is a idea, essentially describing a **privacy-focused annotation layer** on top of LLM inputs, using **color-coded text** to:
 
 1. **Mark sensitivity levels of different data segments**, and
 2. **Interpret sentiment and intent** using a visual spectrum.
