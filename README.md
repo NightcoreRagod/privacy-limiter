@@ -347,7 +347,7 @@ print("Redacted:", redacted_items)
 
 ```
 Safe to LLM: Hi, I’m [PERSON_REDACTED] from [GPE_REDACTED]. My email is [EMAIL_REDACTED].
-Redacted: [('Roshini', 'PERSON'), ('Chennai', 'GPE'), ('roshini@example.com', 'EMAIL')]
+Redacted: [('xxxx', 'PERSON'), ('Bangalore', 'GPE'), ('xxxxi@example.com', 'EMAIL')]
 ```
 
 ---
