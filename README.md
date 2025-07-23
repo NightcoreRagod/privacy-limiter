@@ -685,5 +685,113 @@ Let me know how you'd like to proceed—I can generate the complete enhanced ver
 
 
 
+**********************************************************************************Reference idea from chatgpt******************************************************************************************************
+stage-5
+
+
+Here's a Python function tailored for your **LLM Privacy Gate Streamlit app** that:
+
+* ✅ Auto-corrects spelling & slight grammar
+* ✅ Rewrites in a **professional tone** suitable for ticket notes
+* ✅ Replaces:
+
+  * `"you"` → `"the caller"`
+  * `"I"` → `"we"`
+* ✅ Converts to **first-person** professional voice
+* ✅ Fixes **capitalization**
+* ✅ Also returns a **1-liner issue summary**
+
+---
+
+### 🧠 Example Use Case
+
+Before:
+
+> i have raiseed a request becaus you are not able to login into your account
+> After:
+> We have raised a request because the caller was not able to log in to their account.
+> **Issue Type:** Login issue reported by the caller.
+
+---
+
+### ✅ Python Function
+
+```python
+from textblob import TextBlob
+import re
+
+def autocorrect_ticket_note(text):
+    # Step 1: Capitalization normalization
+    text = text.strip().capitalize()
+
+    # Step 2: Replace 'you' with 'the caller' (case-insensitive)
+    text = re.sub(r"\byou\b", "the caller", text, flags=re.IGNORECASE)
+
+    # Step 3: Replace 'I' with 'we' (including standalone and contractions)
+    text = re.sub(r"\bI\b", "we", text)
+    text = re.sub(r"\bI'm\b", "we're", text, flags=re.IGNORECASE)
+    text = re.sub(r"\bI've\b", "we've", text, flags=re.IGNORECASE)
+
+    # Step 4: Run through TextBlob for grammar/spelling correction
+    blob = TextBlob(text)
+    corrected_text = str(blob.correct())
+
+    # Step 5: Fix capitalization in the corrected sentence
+    corrected_text = corrected_text[0].upper() + corrected_text[1:]
+
+    # Step 6: Generate a one-liner issue type summary
+    issue_summary = generate_issue_summary(corrected_text)
+
+    # Final paragraph
+    full_note = f"{corrected_text} Issue Type: {issue_summary}"
+    return full_note
+
+def generate_issue_summary(text):
+    # Extract keywords for classification (basic rules, can be improved with NLP)
+    if "login" in text.lower():
+        return "Login issue reported by the caller."
+    elif "reset" in text.lower():
+        return "Reset request raised by the caller."
+    elif "not able to access" in text.lower() or "access issue" in text.lower():
+        return "Access issue encountered by the caller."
+    elif "error" in text.lower():
+        return "Application error experienced by the caller."
+    else:
+        return "Support request raised by the caller."
+```
+
+---
+
+### 🧪 Example
+
+```python
+autocorrect_ticket_note("i have raiseed a request becaus you are not able to login into your account")
+```
+
+#### ✅ Output:
+
+```
+We have raised a request because the caller was not able to log in to their account. Issue Type: Login issue reported by the caller.
+```
+
+---
+
+### 📦 Optional Streamlit Integration
+
+You can wrap this in your app as:
+
+```python
+if st.button("🛠️ Auto-correct & Format Note"):
+    cleaned_note = autocorrect_ticket_note(user_input)
+    st.success("📋 Ticket Note (Formatted)")
+    st.write(cleaned_note)
+```
+
+Would you like me to **combine this with your main app.py** or show how to export the corrected note to PDF/CSV too?
+
+
+**********************************************************************************Reference idea from chatgpt******************************************************************************************************
+stage-
+
 
 
