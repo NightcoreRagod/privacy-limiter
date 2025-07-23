@@ -1,0 +1,176 @@
+Great! Here's your enhanced app.py file for the LLM Privacy Gate Streamlit app with:
+
+✅ PII detection & redaction
+✅ Sentiment detection
+✅ Color-coded highlighting
+✅ Action toggle (Replace / Warn / Block)
+✅ Redaction log download (CSV)
+✅ Auto-correct + professional ticket note formatter
+✅ 1-liner issue summary
+
+📄 app.py — Full Enhanced Code
+python
+Copy
+Edit
+import streamlit as st
+import spacy
+from textblob import TextBlob
+import pandas as pd
+import re
+
+# Load spaCy model
+nlp = spacy.load("en_core_web_sm")
+PII_ENTITIES = {"PERSON", "GPE", "ORG", "EMAIL", "LOC", "DATE", "TIME", "PHONE", "MONEY"}
+
+# ---------- PII Detection & Redaction ----------
+def redact_text(text):
+    doc = nlp(text)
+    redacted_text = text
+    redacted_items = []
+
+    for ent in reversed(doc.ents):
+        if ent.label_ in PII_ENTITIES:
+            redacted_items.append((ent.text, ent.label_))
+            redacted_text = (
+                redacted_text[:ent.start_char] +
+                f"[{ent.label_}_REDACTED]" +
+                redacted_text[ent.end_char:]
+            )
+    return redacted_text, redacted_items, doc
+
+# ---------- PII Color Highlighter ----------
+def highlight_pii(doc):
+    output = ""
+    last_idx = 0
+    for ent in doc.ents:
+        output += doc.text[last_idx:ent.start_char]
+        if ent.label_ in PII_ENTITIES:
+            output += f"<span style='background-color:#ffcccc; padding:2px'>{ent.text}</span>"
+        else:
+            output += ent.text
+        last_idx = ent.end_char
+    output += doc.text[last_idx:]
+    return output
+
+# ---------- Sentiment Analyzer ----------
+def get_sentiment(text):
+    blob = TextBlob(text)
+    polarity = blob.sentiment.polarity
+    if polarity > 0.5:
+        return "😊 Positive"
+    elif polarity < -0.5:
+        return "😠 Negative"
+    else:
+        return "😐 Neutral"
+
+# ---------- Redaction CSV Export ----------
+def export_log_csv(items):
+    df = pd.DataFrame(items, columns=["Entity", "Label"])
+    return df.to_csv(index=False).encode("utf-8")
+
+# ---------- Auto-Correct + Ticket Formatter ----------
+def autocorrect_ticket_note(text):
+    text = text.strip().capitalize()
+    text = re.sub(r"\byou\b", "the caller", text, flags=re.IGNORECASE)
+    text = re.sub(r"\bI\b", "we", text)
+    text = re.sub(r"\bI'm\b", "we're", text, flags=re.IGNORECASE)
+    text = re.sub(r"\bI've\b", "we've", text, flags=re.IGNORECASE)
+    blob = TextBlob(text)
+    corrected_text = str(blob.correct())
+    corrected_text = corrected_text[0].upper() + corrected_text[1:]
+    issue_summary = generate_issue_summary(corrected_text)
+    return f"{corrected_text} Issue Type: {issue_summary}"
+
+def generate_issue_summary(text):
+    t = text.lower()
+    if "login" in t:
+        return "Login issue reported by the caller."
+    elif "reset" in t:
+        return "Reset request raised by the caller."
+    elif "access" in t:
+        return "Access issue encountered by the caller."
+    elif "error" in t:
+        return "Application error experienced by the caller."
+    else:
+        return "Support request raised by the caller."
+
+# ---------- Streamlit App ----------
+st.set_page_config(page_title="🔐 LLM Privacy Gate", layout="centered")
+st.title("🔐 LLM Privacy Gate")
+st.write("Detects PII, evaluates sentiment, auto-corrects and formats ticket notes before sending to LLMs.")
+
+user_input = st.text_area("✍️ Enter text:", height=200)
+mode = st.radio("Choose privacy mode:", ["Replace", "Warn", "Block"])
+
+if st.button("🔍 Analyze Input"):
+    if not user_input.strip():
+        st.warning("Please enter some text.")
+    else:
+        redacted_text, redacted_items, doc = redact_text(user_input)
+
+        # Toggle-based actions
+        if redacted_items:
+            if mode == "Block":
+                st.error("Input blocked due to detected sensitive information.")
+                st.stop()
+            elif mode == "Warn":
+                st.warning("Sensitive data detected. Proceed with caution.")
+
+        # Show PII highlighting
+        st.subheader("🕵️ Highlighted Input")
+        st.markdown(highlight_pii(doc), unsafe_allow_html=True)
+
+        # Show redacted output
+        st.subheader("🧼 Redacted Text Sent to LLM")
+        st.code(redacted_text, language="text")
+
+        # Show redacted list
+        if redacted_items:
+            st.success(f"✅ Redacted {len(redacted_items)} item(s).")
+            csv = export_log_csv(redacted_items)
+            st.download_button("⬇️ Download Redaction Log (CSV)", csv, "redaction_log.csv", "text/csv")
+
+        # Sentiment
+        sentiment = get_sentiment(user_input)
+        st.subheader("🧠 Sentiment Analysis")
+        st.info(f"Sentiment: {sentiment}")
+
+        # Ticket auto-correction
+        st.subheader("📋 Auto-Corrected Ticket Note")
+        formatted_note = autocorrect_ticket_note(user_input)
+        st.code(formatted_note, language="text")
+🧪 To Run the App:
+Save as app.py
+
+Create requirements.txt:
+
+txt
+Copy
+Edit
+streamlit
+spacy
+textblob
+pandas
+Install:
+
+bash
+Copy
+Edit
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
+python -m textblob.download_corpora
+Run:
+
+bash
+Copy
+Edit
+streamlit run app.py
+Would you like me to:
+
+Add PDF export for ticket notes or logs?
+
+Integrate LLM output preview from OpenAI/Anthropic?
+
+Deploy this on Streamlit Cloud or a simple Hugging Face space?
+
+Let’s take this to the next level!
