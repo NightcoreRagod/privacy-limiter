@@ -1,4 +1,4 @@
-Great! Here's your enhanced app.py file for the LLM Privacy Gate Streamlit app with:
+'''Great! Here's your **enhanced `app.py` file** for the **LLM Privacy Gate Streamlit app** with:
 
 ✅ PII detection & redaction
 ✅ Sentiment detection
@@ -8,10 +8,11 @@ Great! Here's your enhanced app.py file for the LLM Privacy Gate Streamlit app w
 ✅ Auto-correct + professional ticket note formatter
 ✅ 1-liner issue summary
 
-📄 app.py — Full Enhanced Code
-python
-Copy
-Edit
+---
+
+### 📄 `app.py` — Full Enhanced Code
+
+```python
 import streamlit as st
 import spacy
 from textblob import TextBlob
@@ -139,38 +140,42 @@ if st.button("🔍 Analyze Input"):
         st.subheader("📋 Auto-Corrected Ticket Note")
         formatted_note = autocorrect_ticket_note(user_input)
         st.code(formatted_note, language="text")
-🧪 To Run the App:
-Save as app.py
+```
 
-Create requirements.txt:
+---
 
-txt
-Copy
-Edit
+### 🧪 To Run the App:
+
+1. Save as `app.py`
+2. Create `requirements.txt`:
+
+```txt
 streamlit
 spacy
 textblob
 pandas
-Install:
+```
 
-bash
-Copy
-Edit
+3. Install:
+
+```bash
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 python -m textblob.download_corpora
-Run:
+```
 
-bash
-Copy
-Edit
+4. Run:
+
+```bash
 streamlit run app.py
+```
+
+---
+
 Would you like me to:
 
-Add PDF export for ticket notes or logs?
+* Add **PDF export** for ticket notes or logs?
+* Integrate **LLM output preview** from OpenAI/Anthropic?
+* Deploy this on **Streamlit Cloud** or a simple Hugging Face space?
 
-Integrate LLM output preview from OpenAI/Anthropic?
-
-Deploy this on Streamlit Cloud or a simple Hugging Face space?
-
-Let’s take this to the next level!
+Let’s take this to the next level!'''
