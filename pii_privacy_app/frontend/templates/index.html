@@ -1,0 +1,28 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Privacy-Limiter LLM</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div id="app">
+  <h1>Privacy-Limiter LLM Demo</h1>
+
+  <textarea id="in" rows="8" placeholder="Type or paste your prompt…"></textarea>
+  <button id="go">Submit</button>
+
+  <section id="out" style="display:none;">
+    <div class="tabs">
+      <button data-t="corrected" class="tab active">Corrected</button>
+      <button data-t="colored"   class="tab">Color-coded</button>
+      <button data-t="masked"    class="tab">Masked</button>
+      <button data-t="answer"    class="tab">LLM Answer</button>
+    </div>
+    <pre id="corrected" class="pane"></pre>
+    <pre id="colored"   class="pane" style="display:none;"></pre>
+    <pre id="masked"    class="pane" style="display:none;"></pre>
+    <pre id="answer"    class="pane" style="display:none;"></pre>
+  </section>
+</div>
+<script src="/static/js/app.js"></script>
+</body></html>
