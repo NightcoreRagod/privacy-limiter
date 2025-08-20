@@ -791,7 +791,8 @@ Would you like me to **combine this with your main app.py** or show how to expor
 
 
 **********************************************************************************Reference idea from chatgpt******************************************************************************************************
-stage-
+stage-6
+https://chatgpt.com/s/t_689957029d6c8191a4ccd361b40868ab
 
 
 
