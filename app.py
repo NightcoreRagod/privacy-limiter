@@ -162,18 +162,57 @@ def call_llm(prompt):
     except Exception as e:
         return f"LLM Error: {str(e)}"
 
-# PDF export options
-st.subheader("📄 Export Options")
-pdf_note = generate_ticket_pdf(formatted_note)
-st.download_button("⬇️ Download Ticket Note (PDF)", pdf_note, "ticket_note.pdf", "application/pdf")
+# ...existing code...
+if st.button("🔍 Analyze & Redact"):
+    if not user_input.strip():
+        st.warning("Please enter some text.")
+    else:
+        redacted_text, redacted_items, doc = redact_text(user_input)
+        sentiment = get_sentiment(user_input)
 
-if redacted_items:
-    pdf_log = generate_log_pdf(redacted_items)
-    st.download_button("⬇️ Download Redaction Log (PDF)", pdf_log, "redaction_log.pdf", "application/pdf")
+        st.subheader("📄 Original Input")
+        st.write(user_input)
 
-# LLM preview option
-if st.checkbox("🤖 Preview LLM Output (using redacted input)"):
-    with st.spinner("Sending to LLM..."):
-        response = call_llm(redacted_text)
-    st.subheader("🤖 LLM Response")
-    st.write(response)
+        st.subheader("🖍️ Highlighted Entities")
+        st.markdown(highlight_pii(doc), unsafe_allow_html=True)
+
+        st.subheader("🧼 Redacted Output")
+        if redacted_items:
+            if mode == "Block":
+                st.error("❌ Input blocked due to sensitive data.")
+                st.stop()
+            elif mode == "Warn":
+                st.warning("⚠️ Sensitive data found. Proceed with caution.")
+        else:
+            st.success("✅ No PII detected.")
+
+        st.code(redacted_text, language="text")
+
+        st.subheader("🧠 Sentiment")
+        st.info(f"Sentiment: {sentiment}")
+
+        if redacted_items:
+            csv = export_log_csv(redacted_items)
+            st.download_button("⬇️ Download Redaction Log (CSV)", csv, "redaction_log.csv", "text/csv")
+
+        # Auto-correction output
+        st.subheader("🛠️ Auto-corrected Ticket Note")
+        formatted_note = autocorrect_ticket_note(user_input)
+        st.success(formatted_note)
+
+        # PDF export options
+        st.subheader("📄 Export Options")
+        pdf_note = generate_ticket_pdf(formatted_note)
+        st.download_button("⬇️ Download Ticket Note (PDF)", pdf_note, "ticket_note.pdf", "application/pdf")
+
+        if redacted_items:
+            pdf_log = generate_log_pdf(redacted_items)
+            st.download_button("⬇️ Download Redaction Log (PDF)", pdf_log, "redaction_log.pdf", "application/pdf")
+
+        # LLM preview option
+        if st.checkbox("🤖 Preview LLM Output (using redacted input)"):
+            with st.spinner("Sending to LLM..."):
+                response = call_llm(redacted_text)
+            st.subheader("🤖 LLM Response")
+            st.write(response)
+# ...existing code...
