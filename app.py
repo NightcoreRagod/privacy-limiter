@@ -127,3 +127,53 @@ if st.button("🔍 Analyze & Redact"):
         st.subheader("🛠️ Auto-corrected Ticket Note")
         formatted_note = autocorrect_ticket_note(user_input)
         st.success(formatted_note)
+
+from fpdf import FPDF
+
+def generate_ticket_pdf(text):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 10, text)
+    return pdf.output(dest="S").encode("latin-1")  # Return as bytes
+
+def generate_log_pdf(items):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, "Redaction Log", ln=True, align="C")
+    for entity, label in items:
+        pdf.cell(200, 10, f"{entity} - {label}", ln=True)
+    return pdf.output(dest="S").encode("latin-1")
+
+import openai
+import os
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+def call_llm(prompt):
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # Or gpt-4 if you prefer
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=150,
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"LLM Error: {str(e)}"
+
+# PDF export options
+st.subheader("📄 Export Options")
+pdf_note = generate_ticket_pdf(formatted_note)
+st.download_button("⬇️ Download Ticket Note (PDF)", pdf_note, "ticket_note.pdf", "application/pdf")
+
+if redacted_items:
+    pdf_log = generate_log_pdf(redacted_items)
+    st.download_button("⬇️ Download Redaction Log (PDF)", pdf_log, "redaction_log.pdf", "application/pdf")
+
+# LLM preview option
+if st.checkbox("🤖 Preview LLM Output (using redacted input)"):
+    with st.spinner("Sending to LLM..."):
+        response = call_llm(redacted_text)
+    st.subheader("🤖 LLM Response")
+    st.write(response)
